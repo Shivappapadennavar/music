@@ -1,5 +1,7 @@
-const CLIENT_ID = "7d53593d"; // Your Jamendo API Key
-const API_URL = https://api.jamendo.com/v3.0/tracks/?client_id=${CLIENT_ID}&format=json&limit=50&include=musicinfo+stats+licenses&audioformat=mp32;
+const CLIENT_ID = "7d53593d"; // Jamendo API Key
+
+// ✅ FIX 1: API URL must be inside backticks
+const API_URL = `https://api.jamendo.com/v3.0/tracks/?client_id=${CLIENT_ID}&format=json&limit=50&include=musicinfo+stats+licenses&audioformat=mp32`;
 
 let track_list = [];
 let track_index = 0;
@@ -30,9 +32,7 @@ async function loadTracksFromAPI() {
       path: song.audio
     }));
 
-    console.log("Loaded songs:", track_list.length);
-
-    loadTrack(0); // Load the first track
+    loadTrack(0);
   } catch (err) {
     console.error("API ERROR:", err);
   }
@@ -102,7 +102,7 @@ volume_slider.addEventListener("input", () => {
 // 🟢 Update seek bar and time display
 function seekUpdate() {
   if (!isNaN(curr_track.duration)) {
-    let pos = curr_track.currentTime * (100 / curr_track.duration);
+    let pos = (curr_track.currentTime / curr_track.duration) * 100;
     seek_slider.value = pos;
 
     let cm = Math.floor(curr_track.currentTime / 60);
@@ -110,10 +110,11 @@ function seekUpdate() {
     let dm = Math.floor(curr_track.duration / 60);
     let ds = Math.floor(curr_track.duration % 60);
 
-    curr_time.textContent = ${cm}:${cs < 10 ? "0" : ""}${cs};
-    total_duration.textContent = ${dm}:${ds < 10 ? "0" : ""}${ds};
+    // ✅ FIX 2: Use template literals
+    curr_time.textContent = `${cm}:${cs < 10 ? "0" : ""}${cs}`;
+    total_duration.textContent = `${dm}:${ds < 10 ? "0" : ""}${ds}`;
   }
 }
 
-// 🟢 Load tracks when page opens
+// 🟢 Load tracks on page load
 loadTracksFromAPI();
